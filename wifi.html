@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artur Gallery - Wi-Fi Access</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .portal-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #333;
+            font-size: 2.2em;
+            font-weight: 300;
+            margin-bottom: 5px;
+        }
+
+        .logo .subtitle {
+            color: #666;
+            font-size: 1em;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .form-group input[type="email"],
+        .form-group input[type="password"],
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #667eea;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+            margin-top: 2px;
+        }
+
+        .checkbox-group label {
+            color: #555;
+            font-size: 0.9em;
+            line-height: 1.4;
+            cursor: pointer;
+        }
+
+        .checkbox-group a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .checkbox-group a:hover {
+            text-decoration: underline;
+        }
+
+        .connect-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .connect-btn:active {
+            transform: translateY(0);
+        }
+
+        .connect-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #ffe6e6;
+            color: #d63384;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #d63384;
+            display: none;
+        }
+
+        .success-message {
+            background: #e6ffe6;
+            color: #198754;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #198754;
+            display: none;
+        }
+
+        .gallery-info {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .gallery-info p {
+            color: #666;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+
+        .wifi-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        .wifi-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        @media (max-width: 480px) {
+            .portal-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .logo h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="portal-container">
+        <div class="logo">
+            <h1>Artur Gallery</h1>
+            <p class="subtitle">Connect to Wi-Fi</p>
+        </div>
+
+        <div class="wifi-status">
+            <svg class="wifi-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.07 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
+            </svg>
+            <span>Artur.Art Network</span>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+
+        <form id="wifiForm" method="post" action="/nodogsplash_auth">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-container">
+                    <input type="password" id="password" name="password" required placeholder="Enter password">
+                    <button type="button" class="password-toggle" onclick="togglePassword()">Show</button>
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="agree" required>
+                <label for="agree">
+                    I agree to the <a href="#" onclick="showTerms()">terms and conditions</a> and privacy policy
+                </label>
+            </div>
+
+            <button type="submit" class="connect-btn" id="connectBtn">
+                <span class="loading-spinner" id="loadingSpinner"></span>
+                <span id="btnText">Connect to Wi-Fi</span>
+            </button>
+        </form>
+
+        <div class="gallery-info">
+            <p>Free Wi-Fi for gallery visitors</p>
+            <p>Need help? Ask our staff at the front desk</p>
+        </div>
+    </div>
+
+    <script>
+        let passwordVisible = false;
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.querySelector('.password-toggle');
+            
+            passwordVisible = !passwordVisible;
+            passwordInput.type = passwordVisible ? 'text' : 'password';
+            toggleBtn.textContent = passwordVisible ? 'Hide' : 'Show';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            successDiv.style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function showTerms() {
+            alert('Terms and Conditions:\n\n1. This Wi-Fi is provided for gallery visitors only\n2. Please use the internet responsibly\n3. Your email may be used for gallery updates and events\n4. No illegal activities are permitted\n5. Connection may be monitored for security purposes\n\nBy connecting, you agree to these terms.');
+        }
+
+        // Form submission handling
+        document.getElementById('wifiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const connectBtn = document.getElementById('connectBtn');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const btnText = document.getElementById('btnText');
+            
+            // Show loading state
+            connectBtn.disabled = true;
+            loadingSpinner.style.display = 'inline-block';
+            btnText.textContent = 'Connecting...';
+            hideMessages();
+            
+            // Simulate connection process
+            setTimeout(() => {
+                // In a real implementation, this would be the actual form submission
+                // For now, we'll simulate both success and potential error scenarios
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                if (email && password) {
+                    // Simulate successful connection
+                    showSuccess('Connected successfully! You now have internet access.');
+                    btnText.textContent = 'Connected ✓';
+                    
+                    // In real implementation, submit the form here:
+                    // this.submit();
+                    
+                } else {
+                    // Show error
+                    showError('Please fill in all required fields.');
+                    connectBtn.disabled = false;
+                    loadingSpinner.style.display = 'none';
+                    btnText.textContent = 'Connect to Wi-Fi';
+                }
+            }, 2000);
+        });
+
+        // Enhanced form validation
+        document.getElementById('email').addEventListener('input', function() {
+            hideMessages();
+        });
+
+        document.getElementById('password').addEventListener('input', function() {
+            hideMessages();
+        });
+
+        // Auto-focus on email field
+        document.getElementById('email').focus();
+    </script>
+</body>
+</html>
